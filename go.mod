@@ -1,4 +1,4 @@
-module FinalProject1
+module github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1
 
 go 1.21.0
 
