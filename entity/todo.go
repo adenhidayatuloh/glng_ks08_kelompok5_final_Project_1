@@ -1,0 +1,11 @@
+package entity
+
+import "time"
+
+type Todo struct {
+	Todo_Id    int
+	Title      string
+	Completed  bool
+	Created_At time.Time
+	Updated_At time.Time
+}
