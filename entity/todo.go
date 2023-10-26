@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Todo struct {
-	Todo_Id    int
+	Todo_Id    uint
 	Title      string
 	Completed  bool
 	Created_At time.Time
