@@ -6,6 +6,7 @@ import (
 )
 
 type TodoRepository interface {
+	CreateTodo(todoPayload entity.Todo) (*entity.Todo, helper.MessageErr)
 	GetAllTodos() ([]entity.Todo, helper.MessageErr)
 	GetTodoByID(id uint) (*entity.Todo, helper.MessageErr)
 	UpdateTodo(todoPayload entity.Todo) helper.MessageErr

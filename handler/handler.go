@@ -18,6 +18,47 @@ func NewTodoHandler(todoService service.TodoService) *TodoHandler {
 	return &TodoHandler{todoService: todoService}
 }
 
+// CreateTodo godoc
+//
+//	@Summary		Create a todo
+//	@Description	Create a todo by json
+//	@Tags			todos
+//	@Accept			json
+//	@Produce		json
+//	@Success		201		{object}	dto.GetTodoByIDResponse
+//	@Failure		422		{object}	errs.MessageErrData
+//	@Failure		500		{object}	errs.MessageErrData
+//	@Router			/todos [post]
+
+func (t *TodoHandler) CreateTodo(ctx *gin.Context) {
+	var newTodoRequest dto.NewTodoRequest
+
+	if err := ctx.ShouldBindJSON(&newTodoRequest); err != nil {
+		newError := helper.NewBadRequest("Invalid request body")
+		ctx.JSON(newError.StatusCode(), newError)
+		return
+	}
+
+	createdTodo, err := t.todoService.CreateTodo(newTodoRequest)
+	if err != nil {
+		ctx.JSON(err.StatusCode(), err)
+		return
+	}
+
+	response := &dto.GetTodoByIDResponse{
+		Message: "success",
+		Data: dto.DetailTodo{
+			ID:        createdTodo.Data.ID,
+			Title:     createdTodo.Data.Title,
+			Completed: createdTodo.Data.Completed,
+			CreatedAt: createdTodo.Data.CreatedAt,
+			UpdatedAt: createdTodo.Data.UpdatedAt,
+		},
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}
+
 // GetAllTodos godoc
 //
 //	@Summary		Get all todos
