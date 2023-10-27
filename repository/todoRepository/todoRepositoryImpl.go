@@ -12,6 +12,7 @@ type todoRepositoryImpl struct {
 }
 
 const (
+	createTodoQuery  = `INSERT INTO "todo" ("title", "completed", "created_at", "updated_at") VALUES ($1, $2, NOW(), NOW()) RETURNING "todo_id"`
 	getAllTodosQuery = `SELECT * FROM todo;`
 	getTodoByIDQuery = `SELECT * FROM todo WHERE todo_id = $1`
 	updateTodoQuery  = `update "todo" set "title" = $1 , "completed" = $2,"updated_at" = NOW() where "todo_id" = $3 `
@@ -21,6 +22,25 @@ func NewTodoRepositoryImpl(db *sql.DB) TodoRepository {
 	return &todoRepositoryImpl{
 		db: db,
 	}
+}
+
+// CreateTodo implements TodoRepository.
+func (t *todoRepositoryImpl) CreateTodo(todoPayload entity.Todo) (*entity.Todo, helper.MessageErr) {
+	var todoID uint
+	err := t.db.QueryRow(createTodoQuery, todoPayload.Title, todoPayload.Completed).Scan(&todoID)
+	if err != nil {
+		return nil, helper.NewInternalServerError("Gagal membuat todo")
+	}
+
+	createdTodo := &entity.Todo{
+		Todo_Id:    todoID,
+		Title:      todoPayload.Title,
+		Completed:  todoPayload.Completed,
+		Created_At: todoPayload.Created_At,
+		Updated_At: todoPayload.Updated_At,
+	}
+
+	return createdTodo, nil
 }
 
 // GetAllTodos implements TodoRepository.

@@ -6,6 +6,7 @@ import (
 )
 
 type TodoService interface {
+	CreateTodo(newTodoRequest dto.NewTodoRequest) (*dto.GetTodoByIDResponse, helper.MessageErr)
 	GetAllTodos() (*dto.GetAllTodosResponse, helper.MessageErr)
 	GetTodoByID(id uint) (*dto.GetTodoByIDResponse, helper.MessageErr)
 	UpdateTodo(todo_id uint, newOrderRequest dto.NewTodoRequest) helper.MessageErr

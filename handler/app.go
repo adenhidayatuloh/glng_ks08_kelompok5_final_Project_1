@@ -18,6 +18,7 @@ func StartApp() {
 
 	r := gin.Default()
 
+	r.POST("/todos", todoHandler.CreateTodo)
 	r.GET("/todos", todoHandler.GetAllTodos)
 	r.GET("/todos/:id", todoHandler.GetTodoByID)
 	r.PUT("todos/:id", todoHandler.UpdateTodo)

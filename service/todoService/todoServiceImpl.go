@@ -11,6 +11,32 @@ type todoServiceImpl struct {
 	repo repository.TodoRepository
 }
 
+// CreateTodo implements TodoService.
+func (t *todoServiceImpl) CreateTodo(newTodoRequest dto.NewTodoRequest) (*dto.GetTodoByIDResponse, helper.MessageErr) {
+	todoPayload := entity.Todo{
+		Title:     newTodoRequest.Title,
+		Completed: newTodoRequest.Completed,
+	}
+
+	createdTodo, err := t.repo.CreateTodo(todoPayload)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &dto.GetTodoByIDResponse{
+		Message: "success",
+		Data: dto.DetailTodo{
+			ID:        createdTodo.Todo_Id,
+			Title:     createdTodo.Title,
+			Completed: createdTodo.Completed,
+			CreatedAt: createdTodo.Created_At,
+			UpdatedAt: createdTodo.Updated_At,
+		},
+	}
+
+	return response, nil
+}
+
 // GetAllTodos implements TodoService.
 func (t *todoServiceImpl) GetAllTodos() (*dto.GetAllTodosResponse, helper.MessageErr) {
 	var todosData []dto.Todos
