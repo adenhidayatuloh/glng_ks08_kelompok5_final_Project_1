@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/dto"
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/helper"
 	service "github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/service/todoService"
 	"github.com/gin-gonic/gin"
@@ -61,6 +62,62 @@ func (t *TodoHandler) GetTodoByID(ctx *gin.Context) {
 	}
 
 	todo, errService := t.todoService.GetTodoByID(uint(idUint))
+	if errService != nil {
+		ctx.JSON(errService.StatusCode(), errService)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, todo)
+}
+
+// UpdateTodo godoc
+//
+//	@Summary		Update todo
+//	@Description	Update a todo by json
+//	@Tags			todos
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		uint				true	"Todo ID"
+//	@Param			todo	body		dto.NewTodoRequest	true	"Update todo request body"
+//	@Success		200		{object}	dto.GetTodoByID
+//	@Failure		400		{object}	errs.MessageErrData
+//	@Failure		422		{object}	errs.MessageErrData
+//	@Failure		404		{object}	errs.MessageErrData
+//	@Failure		500		{object}	errs.MessageErrData
+//	@Router			/todos/{id} [put]
+func (t *TodoHandler) UpdateTodo(ctx *gin.Context) {
+
+	todoID := ctx.Param("id")
+
+	ConvTodoID, err := strconv.Atoi(todoID)
+
+	if err != nil {
+		newError := helper.NewBadRequest("Error convert to int")
+		ctx.JSON(newError.StatusCode(), newError)
+		return
+	}
+
+	var newTodoRequest dto.NewTodoRequest
+
+	err = ctx.ShouldBindJSON(&newTodoRequest)
+
+	if err != nil {
+		newError := helper.NewBadRequest("Error binding json")
+		ctx.JSON(newError.StatusCode(), newError)
+		return
+
+	}
+
+	errService := t.todoService.UpdateTodo(uint(ConvTodoID), newTodoRequest)
+
+	if err != nil {
+
+		ctx.JSON(errService.StatusCode(), errService)
+		return
+
+	}
+
+	todo, errService := t.todoService.GetTodoByID(uint(ConvTodoID))
 	if errService != nil {
 		ctx.JSON(errService.StatusCode(), errService)
 		return

@@ -8,4 +8,5 @@ import (
 type TodoRepository interface {
 	GetAllTodos() ([]entity.Todo, helper.MessageErr)
 	GetTodoByID(id uint) (*entity.Todo, helper.MessageErr)
+	UpdateTodo(todoPayload entity.Todo) helper.MessageErr
 }

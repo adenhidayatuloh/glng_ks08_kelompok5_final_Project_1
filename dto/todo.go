@@ -25,3 +25,8 @@ type DetailTodo struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
+
+type NewTodoRequest struct {
+	Title     string `json:"title" example:"Belajar Flutter"`
+	Completed bool   `json:"completed" example:"false"`
+}

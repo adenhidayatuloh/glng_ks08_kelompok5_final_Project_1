@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/entity"
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/helper"
 )
@@ -13,7 +14,14 @@ type todoRepositoryImpl struct {
 const (
 	getAllTodosQuery = `SELECT * FROM todo;`
 	getTodoByIDQuery = `SELECT * FROM todo WHERE todo_id = $1`
+	updateTodoQuery  = `update "todo" set "title" = $1 , "completed" = $2,"updated_at" = NOW() where "todo_id" = $3 `
 )
+
+func NewTodoRepositoryImpl(db *sql.DB) TodoRepository {
+	return &todoRepositoryImpl{
+		db: db,
+	}
+}
 
 // GetAllTodos implements TodoRepository.
 func (t *todoRepositoryImpl) GetAllTodos() ([]entity.Todo, helper.MessageErr) {
@@ -49,8 +57,27 @@ func (t *todoRepositoryImpl) GetTodoByID(id uint) (*entity.Todo, helper.MessageE
 	return &todo, nil
 }
 
-func NewTodoRepositoryImpl(db *sql.DB) TodoRepository {
-	return &todoRepositoryImpl{
-		db: db,
+func (t *todoRepositoryImpl) UpdateTodo(todoPayload entity.Todo) helper.MessageErr {
+	tx, err := t.db.Begin()
+
+	if err != nil {
+		return helper.NewInternalServerError("Error in database")
 	}
+
+	_, err = tx.Exec(updateTodoQuery, todoPayload.Title, todoPayload.Completed, todoPayload.Todo_Id)
+
+	if err != nil {
+		tx.Rollback()
+		return helper.NewInternalServerError("Error in executing query")
+
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return helper.NewInternalServerError("Error in commit database")
+	}
+
+	return nil
 }

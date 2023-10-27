@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/dto"
+	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/entity"
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/helper"
 	repository "github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/repository/todoRepository"
 )
@@ -55,6 +56,21 @@ func (t *todoServiceImpl) GetTodoByID(id uint) (*dto.GetTodoByIDResponse, helper
 	}
 	// Return response
 	return response, nil
+}
+
+func (t *todoServiceImpl) UpdateTodo(todo_id uint, newTodoRequest dto.NewTodoRequest) helper.MessageErr {
+	todoPayload := entity.Todo{
+		Todo_Id:   todo_id,
+		Title:     newTodoRequest.Title,
+		Completed: newTodoRequest.Completed,
+	}
+
+	err := t.repo.UpdateTodo(todoPayload)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewTodoServiceImpl(r repository.TodoRepository) TodoService {
