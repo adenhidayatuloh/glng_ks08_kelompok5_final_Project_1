@@ -29,7 +29,11 @@ func (t *todoRepositoryImpl) CreateTodo(todoPayload entity.Todo) (*entity.Todo, 
 	var todoID uint
 	err := t.db.QueryRow(createTodoQuery, todoPayload.Title, todoPayload.Completed).Scan(&todoID)
 	if err != nil {
+<<<<<<< HEAD
 		return nil, helper.NewInternalServerError("Failed to create new todo")
+=======
+		return nil, helper.NewInternalServerError("Gagal membuat todo")
+>>>>>>> c5cff68ac14deabc660e78fb005a8d2fb694eac9
 	}
 
 	createdTodo := &entity.Todo{
