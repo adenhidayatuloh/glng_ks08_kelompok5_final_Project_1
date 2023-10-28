@@ -16,6 +16,7 @@ const (
 	getAllTodosQuery = `SELECT * FROM todo;`
 	getTodoByIDQuery = `SELECT * FROM todo WHERE todo_id = $1`
 	updateTodoQuery  = `update "todo" set "title" = $1 , "completed" = $2,"updated_at" = NOW() where "todo_id" = $3 `
+	deleteTodoQuery  = `DELETE FROM todo WHERE todo_id = $1`
 )
 
 func NewTodoRepositoryImpl(db *sql.DB) TodoRepository {
@@ -94,6 +95,28 @@ func (t *todoRepositoryImpl) UpdateTodo(todoPayload entity.Todo) helper.MessageE
 
 	err = tx.Commit()
 
+	if err != nil {
+		tx.Rollback()
+		return helper.NewInternalServerError("Error in commit database")
+	}
+
+	return nil
+}
+
+// DeleteTodo implements TodoRepository.
+func (t *todoRepositoryImpl) DeleteTodo(id uint) helper.MessageErr {
+	tx, err := t.db.Begin()
+	if err != nil {
+		return helper.NewInternalServerError("Error in database")
+	}
+
+	_, err = tx.Exec(deleteTodoQuery, id)
+	if err != nil {
+		tx.Rollback()
+		return helper.NewInternalServerError("Error in executing query")
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
 		return helper.NewInternalServerError("Error in commit database")

@@ -99,6 +99,21 @@ func (t *todoServiceImpl) UpdateTodo(todo_id uint, newTodoRequest dto.NewTodoReq
 	return nil
 }
 
+// DeleteTodo implements TodoService.
+func (t *todoServiceImpl) DeleteTodo(id uint) helper.MessageErr {
+	_, err := t.repo.GetTodoByID(id)
+	if err != nil {
+		return err
+	}
+
+	err = t.repo.DeleteTodo(id)
+	if err != nil {
+		return helper.NewInternalServerError("Failed to delete todo")
+	}
+
+	return nil
+}
+
 func NewTodoServiceImpl(r repository.TodoRepository) TodoService {
 	return &todoServiceImpl{
 		repo: r,

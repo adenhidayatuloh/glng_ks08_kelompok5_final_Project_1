@@ -166,3 +166,34 @@ func (t *TodoHandler) UpdateTodo(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, todo)
 }
+
+// DeleteTodo godoc
+//
+//	@Summary		Delete todo
+//	@Description	Delete a todo by id
+//	@Tags			todos
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		uint	true	"todo ID"
+//	@Success		200	{object}	dto.DeleteTodoResponse
+//	@Failure		400	{object}	errs.MessageErrData
+//	@Failure		404	{object}	errs.MessageErrData
+//	@Failure		500	{object}	errs.MessageErrData
+//	@Router			/todos/{id} [delete]
+func (t *TodoHandler) DeleteTodo(ctx *gin.Context) {
+	id := ctx.Param("id")
+	idUint, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		newError := helper.NewBadRequest("ID should be an unsigned integer")
+		ctx.JSON(newError.StatusCode(), newError)
+		return
+	}
+
+	err2 := t.todoService.DeleteTodo(uint(idUint))
+	if err2 != nil {
+		ctx.JSON(err2.StatusCode(), err2)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
