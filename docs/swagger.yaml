@@ -1,0 +1,226 @@
+definitions:
+  dto.DetailTodo:
+    properties:
+      completed:
+        type: boolean
+      createdAt:
+        type: string
+      id:
+        example: 69
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  dto.GetAllTodosResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.Todos'
+        type: array
+      message:
+        type: string
+    type: object
+  dto.GetTodoByIDResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.DetailTodo'
+      message:
+        type: string
+    type: object
+  dto.NewTodoRequest:
+    properties:
+      completed:
+        example: false
+        type: boolean
+      title:
+        example: Belajar Flutter
+        type: string
+    type: object
+  dto.NewTodoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.NewTodoRequest'
+      message:
+        example: Todo with id 69 has been successfully created
+        type: string
+    type: object
+  dto.Todos:
+    properties:
+      completed:
+        type: boolean
+      id:
+        example: 69
+        type: integer
+      title:
+        type: string
+    type: object
+  helper.MessageErrData:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: asdf@gmail.com
+    name: API Support
+  description: this is a sample service for managing todos
+  license:
+    name: Apache 2.0
+  termsOfService: http://swagger.io/terms/
+  version: "1.0"
+paths:
+  /todos:
+    get:
+      consumes:
+      - application/json
+      description: List todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAllTodosResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+      summary: Get all todos
+      tags:
+      - todos
+    post:
+      consumes:
+      - application/json
+      description: Create a todo by json
+      parameters:
+      - description: Create todo request body
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.NewTodoResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+      summary: Create a todo
+      tags:
+      - todos
+  /todos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a todo by id
+      parameters:
+      - description: todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+      summary: Delete todo
+      tags:
+      - todos
+    get:
+      consumes:
+      - application/json
+      description: Get a todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetTodoByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+      summary: Get a todo
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: Update a todo by json
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update todo request body
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetTodoByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.MessageErrData'
+      summary: Update todo
+      tags:
+      - todos
+swagger: "2.0"

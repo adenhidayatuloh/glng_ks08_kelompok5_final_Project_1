@@ -27,8 +27,8 @@ func NewTodoHandler(todoService service.TodoService) *TodoHandler {
 //	@Produce		json
 //	@Param			todo	body		dto.NewTodoRequest	true	"Create todo request body"
 //	@Success		201		{object}	dto.NewTodoResponse
-//	@Failure		422		{object}	errs.MessageErrData
-//	@Failure		500		{object}	errs.MessageErrData
+//	@Failure		422		{object}	helper.MessageErrData
+//	@Failure		500		{object}	helper.MessageErrData
 //	@Router			/todos [post]
 func (t *TodoHandler) CreateTodo(ctx *gin.Context) {
 	var newTodoRequest dto.NewTodoRequest
@@ -67,7 +67,7 @@ func (t *TodoHandler) CreateTodo(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	dto.GetAllTodosResponse
-//	@Failure		500	{object}	errs.MessageErrData
+//	@Failure		500	{object}	helper.MessageErrData
 //	@Router			/todos [get]
 func (t *TodoHandler) GetAllTodos(ctx *gin.Context) {
 	// Panggil Service
@@ -89,8 +89,8 @@ func (t *TodoHandler) GetAllTodos(ctx *gin.Context) {
 //	@Produce		json
 //	@Param			id	path		uint	true	"Todo ID"
 //	@Success		200	{object}	dto.GetTodoByIDResponse
-//	@Failure		400	{object}	errs.MessageErrData
-//	@Failure		404	{object}	errs.MessageErrData
+//	@Failure		400	{object}	helper.MessageErrData
+//	@Failure		404	{object}	helper.MessageErrData
 //	@Router			/todos/{id} [get]
 func (t *TodoHandler) GetTodoByID(ctx *gin.Context) {
 	// Ambil Params
@@ -120,11 +120,11 @@ func (t *TodoHandler) GetTodoByID(ctx *gin.Context) {
 //	@Produce		json
 //	@Param			id		path		uint				true	"Todo ID"
 //	@Param			todo	body		dto.NewTodoRequest	true	"Update todo request body"
-//	@Success		200		{object}	dto.GetTodoByID
-//	@Failure		400		{object}	errs.MessageErrData
-//	@Failure		422		{object}	errs.MessageErrData
-//	@Failure		404		{object}	errs.MessageErrData
-//	@Failure		500		{object}	errs.MessageErrData
+//	@Success		200		{object}	dto.GetTodoByIDResponse
+//	@Failure		400		{object}	helper.MessageErrData
+//	@Failure		422		{object}	helper.MessageErrData
+//	@Failure		404		{object}	helper.MessageErrData
+//	@Failure		500		{object}	helper.MessageErrData
 //	@Router			/todos/{id} [put]
 func (t *TodoHandler) UpdateTodo(ctx *gin.Context) {
 
@@ -175,10 +175,9 @@ func (t *TodoHandler) UpdateTodo(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		uint	true	"todo ID"
-//	@Success		200	{object}	dto.DeleteTodoResponse
-//	@Failure		400	{object}	errs.MessageErrData
-//	@Failure		404	{object}	errs.MessageErrData
-//	@Failure		500	{object}	errs.MessageErrData
+//	@Failure		400	{object}	helper.MessageErrData
+//	@Failure		404	{object}	helper.MessageErrData
+//	@Failure		500	{object}	helper.MessageErrData
 //	@Router			/todos/{id} [delete]
 func (t *TodoHandler) DeleteTodo(ctx *gin.Context) {
 	id := ctx.Param("id")

@@ -11,8 +11,8 @@ import (
 const (
 	host     = "localhost"
 	port     = "5432"
-	user     = "dew"
-	password = "root"
+	user     = "developer"
+	password = "Nadim456*-"
 	dbname   = "db_finalproject_1"
 )
 
