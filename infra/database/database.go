@@ -4,16 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = "5432"
-	user     = "developer"
-	password = "Nadim456*-"
-	dbname   = "db_finalproject_1"
+var (
+	host     = os.Getenv("DB_HOST")
+	port     = os.Getenv("DB_PORT")
+	user     = os.Getenv("DB_USER")
+	password = os.Getenv("DB_PASSWORD")
+	dbname   = os.Getenv("DB_NAME")
 )
 
 var (
@@ -28,19 +30,31 @@ func handlerDatabaseConnection() {
 
 	if err != nil {
 
-		log.Panic("Error saat validasi database argumen", err)
+		log.Panic("Error Validate database", err)
 	}
 
 	err = db.Ping()
 
 	if err != nil {
 
-		log.Panic("Error saat koneksi ke database", err)
+		log.Panic("Error Connect to database", err)
+	}
+
+}
+
+func handlerDatabaseInstance() {
+	todoTable := `CREATE TABLE IF NOT EXISTS "todo" ( todo_id serial primary key, title varchar (225) not null, completed bool, Created_at timestamptz default now(), Updated_at timestamptz default now() );`
+
+	_, err := db.Exec(todoTable)
+
+	if err != nil {
+		log.Panic("Error create table", err)
 	}
 }
 
 func InitDatabase() {
 	handlerDatabaseConnection()
+	handlerDatabaseInstance()
 }
 
 func GetDatabaseInstance() *sql.DB {

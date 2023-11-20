@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"os"
+
 	_ "github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/docs"
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/infra/database"
 	repository "github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/repository/todoRepository"
 	service "github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/service/todoService"
 	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -19,7 +22,7 @@ import (
 // @license.name Apache 2.0
 // @license.urhttp://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:8080
-
+// @BasePath /
 func StartApp() {
 	database.InitDatabase()
 	db := database.GetDatabaseInstance()
@@ -28,6 +31,7 @@ func StartApp() {
 	todoService := service.NewTodoServiceImpl(todoRepository)
 	todoHandler := NewTodoHandler(todoService)
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	r.POST("/todos", todoHandler.CreateTodo)
@@ -35,8 +39,10 @@ func StartApp() {
 	r.GET("/todos/:id", todoHandler.GetTodoByID)
 	r.PUT("todos/:id", todoHandler.UpdateTodo)
 	r.DELETE("/todos/:id", todoHandler.DeleteTodo)
-	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+
+	r.Run(":" + port)
 
 }

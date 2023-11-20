@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/entity"
 	"github.com/adenhidayatuloh/glng_ks08_kelompok5_final_Project_1/helper"
@@ -12,9 +13,9 @@ type todoRepositoryImpl struct {
 }
 
 const (
-	createTodoQuery  = `INSERT INTO "todo" ("title", "completed", "created_at", "updated_at") VALUES ($1, $2, NOW(), NOW()) RETURNING "todo_id"`
-	getAllTodosQuery = `SELECT * FROM todo;`
-	getTodoByIDQuery = `SELECT * FROM todo WHERE todo_id = $1`
+	createTodoQuery  = `INSERT INTO "todo" ("title", "completed", "created_at", "updated_at") VALUES ($1, $2, NOW(), NOW()) RETURNING "todo_id","created_at","updated_at"`
+	getAllTodosQuery = `SELECT "todo_id","title","completed","created_at","updated_at" FROM todo;`
+	getTodoByIDQuery = `SELECT "todo_id","title","completed","created_at","updated_at" FROM todo WHERE todo_id = $1`
 	updateTodoQuery  = `update "todo" set "title" = $1 , "completed" = $2,"updated_at" = NOW() where "todo_id" = $3 `
 	deleteTodoQuery  = `DELETE FROM todo WHERE todo_id = $1`
 )
@@ -28,7 +29,9 @@ func NewTodoRepositoryImpl(db *sql.DB) TodoRepository {
 // CreateTodo implements TodoRepository.
 func (t *todoRepositoryImpl) CreateTodo(todoPayload entity.Todo) (*entity.Todo, helper.MessageErr) {
 	var todoID uint
-	err := t.db.QueryRow(createTodoQuery, todoPayload.Title, todoPayload.Completed).Scan(&todoID)
+	var created_at time.Time
+	var updated_at time.Time
+	err := t.db.QueryRow(createTodoQuery, todoPayload.Title, todoPayload.Completed).Scan(&todoID, &created_at, &updated_at)
 	if err != nil {
 		return nil, helper.NewInternalServerError("Failed to create new todo")
 	}
@@ -37,8 +40,8 @@ func (t *todoRepositoryImpl) CreateTodo(todoPayload entity.Todo) (*entity.Todo, 
 		Todo_Id:    todoID,
 		Title:      todoPayload.Title,
 		Completed:  todoPayload.Completed,
-		Created_At: todoPayload.Created_At,
-		Updated_At: todoPayload.Updated_At,
+		Created_At: created_at,
+		Updated_At: updated_at,
 	}
 
 	return createdTodo, nil
@@ -85,12 +88,21 @@ func (t *todoRepositoryImpl) UpdateTodo(todoPayload entity.Todo) helper.MessageE
 		return helper.NewInternalServerError("Error in database")
 	}
 
-	_, err = tx.Exec(updateTodoQuery, todoPayload.Title, todoPayload.Completed, todoPayload.Todo_Id)
+	res, err := tx.Exec(updateTodoQuery, todoPayload.Title, todoPayload.Completed, todoPayload.Todo_Id)
 
 	if err != nil {
 		tx.Rollback()
-		return helper.NewInternalServerError("Error in executing query")
+		return helper.NewInternalServerError("Error in database ")
 
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return helper.NewNotFound("Error in database ")
+	}
+
+	if n == 0 || n == -1 {
+		return helper.NewBadRequest("No data to update")
 	}
 
 	err = tx.Commit()

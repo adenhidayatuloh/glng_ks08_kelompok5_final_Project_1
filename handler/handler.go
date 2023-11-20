@@ -133,7 +133,7 @@ func (t *TodoHandler) UpdateTodo(ctx *gin.Context) {
 	ConvTodoID, err := strconv.Atoi(todoID)
 
 	if err != nil {
-		newError := helper.NewBadRequest("Error convert to int")
+		newError := helper.NewBadRequest("Error in request")
 		ctx.JSON(newError.StatusCode(), newError)
 		return
 	}
@@ -143,7 +143,7 @@ func (t *TodoHandler) UpdateTodo(ctx *gin.Context) {
 	err = ctx.ShouldBindJSON(&newTodoRequest)
 
 	if err != nil {
-		newError := helper.NewBadRequest("Error binding json")
+		newError := helper.NewBadRequest("Error in request")
 		ctx.JSON(newError.StatusCode(), newError)
 		return
 
